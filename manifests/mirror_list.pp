@@ -8,7 +8,8 @@ class gitlab_mirrors::mirror_list(
   $mirrors_list_yaml_file    = 'mirror_list.yaml',
   $ensure_mirror_list_repo_cron_job = present,
   $system_user_home_dir,
-  $mirror_list_branch = 'master'
+  $mirror_list_branch = 'master',
+  $cron_environment = 'PATH=$PATH:/usr/local/bin:/usr/bin:/bin',
 ) {
 
   $mirror_list = "${mirror_list_repo_path}/${mirrors_list_yaml_file}"
@@ -37,7 +38,7 @@ class gitlab_mirrors::mirror_list(
     refreshonly => true,
   }
   cron{'sync mirror list repo':
-    environment => 'PATH=$PATH:/usr/local/bin:/usr/bin:/bin',
+    environment => $cron_environment,
     ensure => $ensure_mirror_list_repo_cron_job,
     command => "source /etc/profile ; cd ${mirror_list_repo_path} ; git pull 2>&1 > /dev/null",
     minute => '05',
@@ -52,6 +53,7 @@ class gitlab_mirrors::mirror_list(
   }
 
   cron{'gitlab mirrors sync job':
+    environment => $cron_environment,
     command => "source /etc/profile ; ${system_user_home_dir}/sync_mirrors.rb $gitlab_mirrors_repo_dir_path $mirror_list 2>&1 > /dev/null",
     ensure => $ensure_mirror_sync_job,
     hour => '*',

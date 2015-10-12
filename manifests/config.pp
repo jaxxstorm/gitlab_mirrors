@@ -16,6 +16,7 @@ class gitlab_mirrors::config(
   $gitlab_mirrors_branch     = 'master',
   $ssh_rsa_public_key        = undef ,
   $ssh_rsa_private_key       = undef,
+  $cron_environment          = 'PATH=$PATH:/usr/local/bin:/usr/bin:/bin',
 ){
   include gitlab_mirrors::install
 
@@ -116,7 +117,7 @@ class gitlab_mirrors::config(
   }
 
   cron{'gitlab mirrors update job':
-    environment => 'PATH=$PATH:/usr/local/bin:/usr/bin:/bin',
+    environment => $cron_environment,
     command => "source /etc/profile ; ${repo_dir}/git-mirrors.sh 2>&1 > /dev/null",
     ensure => $ensure_mirror_update_job,
     hour => '*',

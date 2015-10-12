@@ -61,6 +61,7 @@ class gitlab_mirrors(
   $ssh_rsa_private_key       = undef,
   $mirror_list_branch        = 'master',
   $gitlab_mirrors_branch     = 'master',
+  $cron_environment          = 'PATH=$PATH:/usr/local/bin:/usr/bin:/bin'     
 ) {
   class{'gitlab_mirrors::install_dependencies':
     install_dependencies => $install_dependencies
@@ -87,6 +88,7 @@ class gitlab_mirrors(
     ssh_rsa_public_key        => $ssh_rsa_public_key,
     ssh_rsa_private_key       => $ssh_rsa_private_key,
     gitlab_mirrors_branch     => $gitlab_mirrors_branch,
+    cron_environment          => $cron_environment,
     require                   => Class['gitlab_mirrors::install_dependencies','gitlab_mirrors::install']
   }
   if $configure_mirror_list_feature == true {
@@ -101,6 +103,7 @@ class gitlab_mirrors(
       mirrors_list_yaml_file    => $mirrors_list_yaml_file,
       ensure_mirror_list_repo_cron_job => $ensure_mirror_list_repo_cron_job,
       system_user_home_dir      => $system_user_home_dir,
+      cron_environment          => $cron_environment,
       require                   => Class['gitlab_mirrors::config']
     }
   }
